@@ -78,6 +78,11 @@ public class User extends BaseModel implements UserDetails {
 	@UpdateTimestamp()
 	private Date updatedAt;
 
+//	@OneToOne(fetch = FetchType.EAGER, mappedBy = "user")
+//	@ToString.Exclude
+//	@EqualsAndHashCode.Exclude
+//	private Cart cart;
+
 	public User() {
 		username = "";
 		email = "";
