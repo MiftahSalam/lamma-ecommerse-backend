@@ -2,17 +2,7 @@ package com.miftah.lamaecommerse.models.cart;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import com.miftah.lamaecommerse.models.product.Product;
@@ -61,4 +51,10 @@ public class CartItem implements Serializable {
 	@NotNull
 	private double amount;
 
+	@Transient()
+	@PreUpdate()
+	@PrePersist
+	void calculateAmount() {
+		this.amount = this.product.getPrice()*this.quantity;
+	}
 }

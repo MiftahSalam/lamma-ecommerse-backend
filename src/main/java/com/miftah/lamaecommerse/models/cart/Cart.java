@@ -4,18 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import com.miftah.lamaecommerse.models.User;
@@ -57,10 +46,23 @@ public class Cart implements Serializable {
 	private double total;
 
 	@Transient
-	public void addItems(Set<CartItem> carts) {
-		items.addAll(carts);
-		for (CartItem cartItem : carts) {
+	public void addItems(Set<CartItem> cartItems) {
+		items.addAll(cartItems);
+		for (CartItem cartItem : cartItems) {
+			cartItem.calculateAmount();
 			cartItem.setCart(this);
 		}
+		calculateTotal();
 	}
+
+	@Transient()
+	@PreUpdate()
+	@PrePersist
+	void calculateTotal() {
+		this.total = 0.;
+		for (CartItem item: this.items) {
+			this.total += item.getAmount();
+		}
+	}
+
 }

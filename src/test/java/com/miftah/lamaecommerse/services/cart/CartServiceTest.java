@@ -66,16 +66,13 @@ public class CartServiceTest {
 				userUpdate.setBaseId(user.getId());
 				UserMockData.userListUpdate.set(i, userUpdate);
 				i++;
-
 			} catch (Exception e) {
 				initOk = false;
 			}
 		}
-
 		assumeTrue(initOk);
 
 		i = 0;
-
 		try {
 			for (Product product : ProductMockData.products) {
 				log.info("Create product {}", product);
@@ -89,9 +86,7 @@ public class CartServiceTest {
 		} catch (Exception e) {
 			initOk = false;
 		}
-
 		assumeTrue(initOk);
-
 	}
 
 	@Test
@@ -112,7 +107,48 @@ public class CartServiceTest {
 			cart.setUser(user);
 			this.carts.add(cart);
 			
-			cartService.createCart(cart);
+			Cart createdCart = cartService.createCart(cart);
+			double total = 0.;
+			for (CartItem item: this.cart1Items) {
+				total += item.getAmount();
+			}
+
+			assertThat(createdCart).isEqualTo(cart);
+			assertThat(createdCart.getItems().size()).isEqualTo(2);
+			assertThat(createdCart.getItems()).containsAll(Set.of(item1, item2));
+			assertThat(createdCart.getUser()).isEqualTo(user);
+			assertThat(createdCart.getTotal()).isEqualTo(total);
+		});
+	}
+
+	@Test
+	@Order(2)
+	void testCreateCart_Success2() {
+		assertThatNoException().isThrownBy(() -> {
+			User user = UserMockData.userList.get(1);
+			Product product1 = ProductMockData.products.get(0);
+			Product product2 = ProductMockData.products.get(1);
+			CartItem item1 = new CartItem(product1, 3);
+			CartItem item2 = new CartItem(product2, 4);
+
+			Cart cart = new Cart();
+
+			cart1Items.addAll(Set.of(item1, item2));
+			cart.addItems(cart1Items);
+			cart.setUser(user);
+			this.carts.add(cart);
+
+			Cart createdCart = cartService.createCart(cart);
+			double total = 0.;
+			for (CartItem item: this.cart1Items) {
+				total += item.getAmount();
+			}
+
+			assertThat(createdCart).isEqualTo(cart);
+			assertThat(createdCart.getItems().size()).isEqualTo(2);
+			assertThat(createdCart.getItems()).containsAll(Set.of(item1, item2));
+			assertThat(createdCart.getUser()).isEqualTo(user);
+			assertThat(createdCart.getTotal()).isEqualTo(total);
 		});
 	}
 
@@ -121,15 +157,11 @@ public class CartServiceTest {
 		assertThatNoException().isThrownBy(() -> {
 			cartService.deleteMany(this.carts);
 		});
-
 		assertThatNoException().isThrownBy(() -> {
 			productService.deleteMany(ProductMockData.products);
 		});
-		
 		assertThatNoException().isThrownBy(() -> {
 			userService.deleteMany(UserMockData.userList);
 		});
-
 	}
-
 }

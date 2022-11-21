@@ -31,20 +31,17 @@ public class CartService extends BaseServiceImpl<Cart, CartRepository> {
 	private CartItemRepository cartItemRepository;
 
 	public Cart createCart(Cart cart) throws Exception {
-		Cart gettedCart;
+		Cart getCart;
 		try {
-			gettedCart = getById(cart.getId());
-			gettedCart.addItems(cart.getItems());
+			getCart = getById(cart.getId());
+			getCart.addItems(cart.getItems());
 		} catch (InvalidDataAccessApiUsageException e) {
-			gettedCart = createNewCart(cart);
-		} catch (AlreadyExistException e) {
-			System.out.println("already exist");
-			gettedCart = cart;
+			getCart = createNewCart(cart);
 		} catch (Exception e) {
-			gettedCart = createNewCart(cart);
+			getCart = createNewCart(cart);
 		}
 
-		return gettedCart;
+		return getCart;
 	}
 
 	@Override
@@ -72,7 +69,6 @@ public class CartService extends BaseServiceImpl<Cart, CartRepository> {
 		}
 
 		Cart newCart = cartRepository.save(cart);
-
 
 		return newCart;
 	}
